@@ -53,7 +53,7 @@ include(CheckCCompilerFlag)
 
 project(CURL C)
 
-option(CALIbuilder "Build with CALI" ON)  # Define CALIbuilder option
+option(CALIbuilder "Build with CALI" OFF)  # Define CALIbuilder option
 
 if(CALIbuilder)
     #######################cali
@@ -78,7 +78,7 @@ else()
     set(CMAKE_C_COMPILER clang)
     set(CMAKE_CXX_COMPILER clang++)
     set(EXLD_CONFIG_PATH ${CMAKE_CURRENT_SOURCE_DIR})
-    set(EXLD_DIR "/home/a402/workspace/mllib-sandbox/sandbox/build")
+    set(EXLD_DIR "/root/workspace/mllib-sandbox/sandbox/build")
 
     add_library(EXLD_ISOLATION_OPTIONS INTERFACE)
 

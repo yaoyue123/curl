@@ -4,6 +4,9 @@ sandboxs:
   a1:
     selectors:
       - libz
+      - libssl
+      - libcurl
+      - libcrypto
     shm_size: 16
     nsconfig:
       rw_dirs:
