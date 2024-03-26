@@ -87,8 +87,11 @@ add_library(
   ${CURL_CFILES} ${CURLTOOL_LIBCURL_CFILES} ${CURL_HFILES}
 )
 target_compile_definitions(curltool PUBLIC UNITTESTS CURL_STATICLIB)
-target_link_libraries(curltool PRIVATE ${CURL_LIBS})
-
+if(CALIbuilder)
+target_link_libraries(curltool PRIVATE ${CURL_LIBS} CALI_ISOLATION_OPTIONS)
+else()
+target_link_libraries(curltool PRIVATE ${CURL_LIBS} EXLD_ISOLATION_OPTIONS)
+endif()
 if(CURL_HAS_LTO)
   set_target_properties(${EXE_NAME} PROPERTIES
     INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
@@ -112,7 +115,11 @@ include_directories(
   )
 
 #Build curl executable
-target_link_libraries(${EXE_NAME} ${LIB_SELECTED_FOR_EXE} ${CURL_LIBS})
+if(CALIbuilder)
+target_link_libraries(${EXE_NAME} ${LIB_SELECTED_FOR_EXE} ${CURL_LIBS} CALI_ISOLATION_OPTIONS)
+else()
+target_link_libraries(${EXE_NAME} ${LIB_SELECTED_FOR_EXE} ${CURL_LIBS} EXLD_ISOLATION_OPTIONS)
+endif()
 
 ################################################################################
 

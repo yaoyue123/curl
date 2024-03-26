@@ -53,6 +53,49 @@ include(CheckCCompilerFlag)
 
 project(CURL C)
 
+option(CALIbuilder "Build with CALI" ON)  # Define CALIbuilder option
+
+if(CALIbuilder)
+    #######################cali
+    set(CMAKE_C_COMPILER clang-7)
+    set(CMAKE_CXX_COMPILER clang++-7)
+    set(CALI_CONFIG_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+    set(CALI_DIR "/home/a402/workspace/Cali-library-isolation/build/")
+
+    add_library(CALI_ISOLATION_OPTIONS INTERFACE)
+
+    # 设置编译生成llvm IR bitcode 中间代码文件 而不是本地机器代码
+    target_compile_options(CALI_ISOLATION_OPTIONS
+        INTERFACE -emit-llvm
+    )
+
+    # 设置链接时使用exld链接器，并指定配置文件
+    target_link_options(CALI_ISOLATION_OPTIONS
+                        INTERFACE -fuse-ld=${CALI_DIR}/cali-linker/cali
+                                -Wl,--cali-config=${CALI_CONFIG_PATH}/config_cali.yaml -v)
+else()
+    #######################异构语言沙箱
+    set(CMAKE_C_COMPILER clang)
+    set(CMAKE_CXX_COMPILER clang++)
+    set(EXLD_CONFIG_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+    set(EXLD_DIR "/home/a402/workspace/mllib-sandbox/sandbox/build")
+
+    add_library(EXLD_ISOLATION_OPTIONS INTERFACE)
+
+    # 设置编译生成llvm IR bitcode 中间代码文件 而不是本地机器代码
+    target_compile_options(EXLD_ISOLATION_OPTIONS
+        INTERFACE -emit-llvm
+    )
+
+    # 设置链接时使用exld链接器，并指定配置文件
+    target_link_options(EXLD_ISOLATION_OPTIONS
+                        INTERFACE --ld-path=${EXLD_DIR}/bin/exld
+                                -Wl,--exld-config=${EXLD_CONFIG_PATH}/config_exld.yaml
+                                -L ${EXLD_DIR}/lib
+                                -Wl,-rpath=${EXLD_DIR}/lib
+                                )
+endif()
+
 file(STRINGS ${CURL_SOURCE_DIR}/include/curl/curlver.h CURL_VERSION_H_CONTENTS REGEX "#define LIBCURL_VERSION( |_NUM )")
 string(REGEX MATCH "#define LIBCURL_VERSION \"[^\"]*"
   CURL_VERSION ${CURL_VERSION_H_CONTENTS})
